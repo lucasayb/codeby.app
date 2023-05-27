@@ -1,0 +1,22 @@
+<div id="<%= dom_id professional_contract %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">User:</strong>
+    <%= professional_contract.user_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Contract time:</strong>
+    <%= professional_contract.contract_time %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Professional profile:</strong>
+    <%= professional_contract.professional_profile_id %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this professional contract", professional_contract, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to 'Edit this professional contract', edit_professional_contract_path(professional_contract), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

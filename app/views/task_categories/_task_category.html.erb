@@ -1,0 +1,17 @@
+<div id="<%= dom_id task_category %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Title:</strong>
+    <%= task_category.title %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Slug:</strong>
+    <%= task_category.slug %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this task category", task_category, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to 'Edit this task category', edit_task_category_path(task_category), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

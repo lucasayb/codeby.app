@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :customer_profiles
   root 'home#index'
   resources :professional_contracts
   resources :professional_profiles

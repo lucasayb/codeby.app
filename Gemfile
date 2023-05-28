@@ -85,3 +85,7 @@ gem "pry-rails", "~> 0.3.9", :groups => [:test, :development]
 gem "rubocop-rails", "~> 2.19", :group => :development
 
 gem "foreman", "~> 0.87.2"
+
+gem "faker", "~> 3.2", :group => :development
+
+gem "will_paginate", "~> 3.3"

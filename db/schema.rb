@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_27_193229) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_27_225552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,16 +52,40 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_27_193229) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "orders", force: :cascade do |t|
+  create_table "customer_profile_ratings", force: :cascade do |t|
+    t.bigint "professional_profile_id", null: false
+    t.bigint "customer_profile_id", null: false
+    t.bigint "task_id", null: false
+    t.float "rating"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_profile_id"], name: "index_customer_profile_ratings_on_customer_profile_id"
+    t.index ["professional_profile_id"], name: "index_customer_profile_ratings_on_professional_profile_id"
+    t.index ["task_id"], name: "index_customer_profile_ratings_on_task_id"
+  end
+
+  create_table "customer_profiles", force: :cascade do |t|
+    t.string "picture"
+    t.string "document_number", null: false
     t.bigint "user_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_customer_profiles_on_user_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "customer_profile_id", null: false
+    t.bigint "professional_profile_id", null: false
     t.integer "amount"
     t.bigint "proposal_id", null: false
     t.bigint "task_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["customer_profile_id"], name: "index_orders_on_customer_profile_id"
+    t.index ["professional_profile_id"], name: "index_orders_on_professional_profile_id"
     t.index ["proposal_id"], name: "index_orders_on_proposal_id"
     t.index ["task_id"], name: "index_orders_on_task_id"
-    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "professional_contracts", force: :cascade do |t|
@@ -74,7 +98,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_27_193229) do
     t.index ["user_id"], name: "index_professional_contracts_on_user_id"
   end
 
+  create_table "professional_profile_ratings", force: :cascade do |t|
+    t.bigint "professional_profile_id", null: false
+    t.bigint "customer_profile_id", null: false
+    t.bigint "task_id", null: false
+    t.float "rating"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_profile_id"], name: "index_professional_profile_ratings_on_customer_profile_id"
+    t.index ["professional_profile_id"], name: "index_professional_profile_ratings_on_professional_profile_id"
+    t.index ["task_id"], name: "index_professional_profile_ratings_on_task_id"
+  end
+
   create_table "professional_profiles", force: :cascade do |t|
+    t.string "picture"
+    t.string "name", null: false
+    t.string "document_number", null: false
     t.bigint "user_id", null: false
     t.string "cv"
     t.datetime "created_at", null: false
@@ -85,11 +124,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_27_193229) do
   create_table "proposals", force: :cascade do |t|
     t.integer "amount"
     t.bigint "task_id", null: false
-    t.bigint "user_id", null: false
+    t.bigint "professional_profile_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["professional_profile_id"], name: "index_proposals_on_professional_profile_id"
     t.index ["task_id"], name: "index_proposals_on_task_id"
-    t.index ["user_id"], name: "index_proposals_on_user_id"
   end
 
   create_table "task_categories", force: :cascade do |t|
@@ -101,13 +140,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_27_193229) do
 
   create_table "tasks", force: :cascade do |t|
     t.string "title"
+    t.string "slug"
+    t.text "raw_description"
     t.text "description"
     t.bigint "task_category_id", null: false
-    t.bigint "user_id", null: false
+    t.bigint "customer_profile_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["customer_profile_id"], name: "index_tasks_on_customer_profile_id"
     t.index ["task_category_id"], name: "index_tasks_on_task_category_id"
-    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -124,14 +165,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_27_193229) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "customer_profile_ratings", "customer_profiles"
+  add_foreign_key "customer_profile_ratings", "professional_profiles"
+  add_foreign_key "customer_profile_ratings", "tasks"
+  add_foreign_key "customer_profiles", "users"
+  add_foreign_key "orders", "customer_profiles"
+  add_foreign_key "orders", "professional_profiles"
   add_foreign_key "orders", "proposals"
   add_foreign_key "orders", "tasks"
-  add_foreign_key "orders", "users"
   add_foreign_key "professional_contracts", "professional_profiles"
   add_foreign_key "professional_contracts", "users"
+  add_foreign_key "professional_profile_ratings", "customer_profiles"
+  add_foreign_key "professional_profile_ratings", "professional_profiles"
+  add_foreign_key "professional_profile_ratings", "tasks"
   add_foreign_key "professional_profiles", "users"
+  add_foreign_key "proposals", "professional_profiles"
   add_foreign_key "proposals", "tasks"
-  add_foreign_key "proposals", "users"
+  add_foreign_key "tasks", "customer_profiles"
   add_foreign_key "tasks", "task_categories"
-  add_foreign_key "tasks", "users"
 end

@@ -3,7 +3,22 @@ class TasksController < ApplicationController
 
   # GET /tasks or /tasks.json
   def index
-    @tasks = Task.all.order(:created_at => :desc).joins(:customer_profile)
+    @task_categories_ids = params[:task_category_ids]
+    @search = params[:search]
+    @tasks = Task.order(:created_at => :desc).joins(:customer_profile).joins(:task_category)
+    
+    @task_categories = TaskCategory.joins(:tasks).includes(:tasks).order(:title => :asc)
+
+    if @search.present?
+      @tasks = @tasks.where('tasks.title ILIKE ?', "%#{@search}%")
+    end
+
+    if @task_categories_ids.present?
+      @tasks = @tasks.where(task_categories: { id: params[:task_category_ids] })
+    end
+
+    @tasks = @tasks.paginate(page: params[:page] || 1, per_page: params[:per_page] || 9 )
+    @tasks = @tasks.all
   end
 
   # GET /tasks/1 or /tasks/1.json
